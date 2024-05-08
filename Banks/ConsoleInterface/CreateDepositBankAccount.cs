@@ -1,0 +1,56 @@
+﻿using Banks.Entities;
+using Banks.Interfaces;
+
+namespace Banks.ConsoleInterface
+{
+    public class CreateDepositBankAccount
+    {
+        private Bank _bank;
+
+        public CreateDepositBankAccount(Bank bank)
+        {
+            _bank = bank;
+        }
+
+        public void Handle()
+        {
+            while (true)
+            {
+                Console.WriteLine("Enter the ID of the client:");
+                string? clientID = Console.ReadLine();
+
+                Console.WriteLine("Enter the count of money to open the deposit account:");
+                string? money = Console.ReadLine();
+
+                Console.WriteLine("Enter the count of days to open the deposit account:");
+                string? days = Console.ReadLine();
+
+                try
+                {
+                    IBankAccount bankAccount = _bank.CreateDepositBankAccount(
+                        Guid.Parse(clientID ?? string.Empty),
+                        decimal.Parse(money ?? string.Empty),
+                        int.Parse(days ?? string.Empty));
+                    Console.WriteLine($"The deposit bank account with ID: {bankAccount.Id} with percent {bankAccount.Percent} " +
+                        $"was created for the client with ID {clientID}.");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Do you want to try again?");
+                    Console.WriteLine("Enter 'yes' if you want.");
+
+                    string? answer = Console.ReadLine();
+                    if (answer is not null && answer.ToLower().Equals("yes"))
+                        continue;
+                }
+
+                break;
+            }
+
+            Console.WriteLine("Press any key to go back.");
+            Console.ReadLine();
+            new BankHandler(_bank).Handle();
+        }
+    }
+}
